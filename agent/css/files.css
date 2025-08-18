@@ -1,0 +1,67 @@
+/* =================
+   FILE HANDLING
+   ================= */
+
+.file-btn {
+  color: var(--text-tertiary);
+}
+
+.file-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+.file-preview {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+  padding: 0 4px;
+}
+
+.file-item {
+  position: relative;
+  display: inline-block;
+  animation: fileSlideIn 0.3s ease-out;
+}
+
+.file-item img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 2px solid var(--border-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.file-item:hover img {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.remove-file {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  border: 2px solid var(--bg-primary);
+  color: white;
+  border-radius: 50%;
+  font-size: 12px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.remove-file:hover {
+  transform: scale(1.1);
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  box-shadow: 0 3px 10px rgba(220, 38, 38, 0.4);
+}

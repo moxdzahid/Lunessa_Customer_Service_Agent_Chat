@@ -1,0 +1,34 @@
+/* =================
+   MAIN CSS FILE
+   AI Agent Interface
+   ================= */
+
+/* Import all modular CSS files */
+@import url('./css/variables.css');
+@import url('./css/base.css');
+@import url('./css/animations.css');
+@import url('./css/layout.css');
+@import url('./css/sidebar.css');
+@import url('./css/messages.css');
+@import url('./css/input.css');
+@import url('./css/files.css');
+@import url('./css/buttons.css');
+@import url('./css/modals.css');
+@import url('./css/light-theme.css');
+@import url('./css/responsive.css');
+
+/* 
+  Organization:
+  - variables.css: CSS custom properties and theme colors
+  - base.css: Global styles, resets, and base typography
+  - animations.css: All keyframe animations and transitions
+  - layout.css: Main layout components and structure
+  - sidebar.css: Sidebar navigation and related components
+  - messages.css: Chat messages and typing indicators
+  - input.css: Input field, buttons, and related components
+  - files.css: File upload and preview components
+  - buttons.css: Button styles and interactive elements
+  - modals.css: Modal dialogs and overlays
+  - light-theme.css: Light theme overrides and specific styling
+  - responsive.css: Media queries and responsive design
+*/

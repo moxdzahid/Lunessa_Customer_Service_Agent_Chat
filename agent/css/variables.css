@@ -1,0 +1,41 @@
+/* =================
+   CSS VARIABLES & THEMES
+   ================= */
+
+/* Prevent theme switching flash */
+html {
+  color-scheme: dark;
+  transition: color-scheme 0.1s;
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
+}
+
+/* Default (dark) theme variables */
+:root {
+  --bg-primary: #18181b;
+  --bg-secondary: #27272a;
+  --bg-tertiary: rgba(39, 39, 42, 0.95);
+  --text-primary: #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --text-tertiary: #71717a;
+  --accent-primary: #8b5cf6;
+  --accent-secondary: #7c3aed;
+  --border-primary: rgba(139, 92, 246, 0.2);
+  --border-secondary: rgba(139, 92, 246, 0.3);
+}
+
+/* Light theme overrides */
+[data-theme="light"] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-tertiary: rgba(248, 250, 252, 0.95);
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --text-tertiary: #9ca3af;
+  --accent-primary: #8b5cf6;
+  --accent-secondary: #7c3aed;
+  --border-primary: rgba(139, 92, 246, 0.2);
+  --border-secondary: rgba(139, 92, 246, 0.3);
+}

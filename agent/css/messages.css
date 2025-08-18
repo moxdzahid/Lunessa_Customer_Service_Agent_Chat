@@ -1,0 +1,129 @@
+/* =================
+   MESSAGES COMPONENT
+   ================= */
+
+.message {
+  display: flex;
+  width: 100%;
+  animation: messageSlideIn 0.3s ease-out;
+  margin-bottom: 8px;
+}
+
+.message.user {
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+  align-self: flex-end;
+}
+
+.message.ai {
+  flex-direction: row;
+  justify-content: flex-start;
+  align-self: flex-start;
+}
+
+.message-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.ai-avatar {
+  background: var(--accent-primary);
+  color: var(--text-primary);
+  margin-right: 12px;
+  box-shadow: 0 2px 10px rgba(139, 92, 246, 0.3);
+}
+
+.user-avatar {
+  background: #06b6d4;
+  color: var(--text-primary);
+  margin-left: 12px;
+  box-shadow: 0 2px 10px rgba(6, 182, 212, 0.3);
+}
+
+.message-wrapper {
+  display: flex;
+  flex-direction: column;
+  max-width: 75%;
+  min-width: 200px;
+}
+
+.message-content {
+  background: var(--bg-secondary);
+  backdrop-filter: blur(10px);
+  padding: 16px 20px;
+  border-radius: 18px;
+  color: var(--text-primary);
+  line-height: 1.6;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  border: 1px solid var(--border-primary);
+  font-size: 15px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.message.user .message-content {
+  background: var(--accent-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-secondary);
+  border-radius: 18px 18px 4px 18px;
+}
+
+.message.ai .message-content {
+  border-radius: 18px 18px 18px 4px;
+}
+
+.message-time {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin-top: 6px;
+  padding: 0 6px;
+  opacity: 0.7;
+}
+
+.message.user .message-time {
+  text-align: right;
+}
+
+.message.ai .message-time {
+  text-align: left;
+}
+
+.typing-indicator {
+  display: none;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+.typing-indicator .message-content {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 16px;
+}
+
+.typing-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--accent-primary);
+  border-radius: 50%;
+  animation: typingDot 1.4s infinite;
+}
+
+.typing-dot:nth-child(1) {
+  animation-delay: 0s;
+}
+.typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
