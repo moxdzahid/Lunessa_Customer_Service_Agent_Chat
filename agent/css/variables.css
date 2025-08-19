@@ -17,6 +17,7 @@ html[data-theme="light"] {
   --bg-primary: #18181b;
   --bg-secondary: #27272a;
   --bg-tertiary: rgba(39, 39, 42, 0.95);
+  --bg-overlay: rgba(24, 24, 27, 0.7);
   --text-primary: #f4f4f5;
   --text-secondary: #a1a1aa;
   --text-tertiary: #71717a;
@@ -31,6 +32,7 @@ html[data-theme="light"] {
   --bg-primary: #ffffff;
   --bg-secondary: #f8fafc;
   --bg-tertiary: rgba(248, 250, 252, 0.95);
+  --bg-overlay: rgba(255, 255, 255, 0.8);
   --text-primary: #1f2937;
   --text-secondary: #6b7280;
   --text-tertiary: #9ca3af;

@@ -8,8 +8,7 @@ class AICustomerService {
     this.chatCore = new ChatCore();
     this.themeManager = new ThemeManager();
     this.voiceHandler = new VoiceHandler(this.chatCore);
-    // this.sidebarManager = new SidebarManager(this.chatCore);
-    this.ratingManager = new RatingManager(this.chatCore, this.themeManager);
+    // this.ratingManager = new RatingManager(this.chatCore, this.themeManager);
     this.fileManager = new FileManager();
     
     // Initialize event handler last (needs all other modules)
@@ -17,7 +16,6 @@ class AICustomerService {
       this.chatCore,
       this.voiceHandler,
       this.themeManager,
-      // this.sidebarManager,
       this.ratingManager
     );
 
@@ -42,9 +40,6 @@ class AICustomerService {
     return this.themeManager.toggleTheme();
   }
 
-  // toggleSidebar() {
-  //   return this.sidebarManager.toggleSidebar();
-  // }
 
   // Getter methods for accessing module states
   get messages() {
@@ -63,9 +58,6 @@ class AICustomerService {
     return this.themeManager.getCurrentTheme();
   }
 
-  // get sidebarVisible() {
-  //   return this.sidebarManager.sidebarVisible;
-  // }
 
   get selectedFiles() {
     return this.fileManager.getSelectedFiles();

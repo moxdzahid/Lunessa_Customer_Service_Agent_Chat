@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const messageDiv = document.createElement("div");
     messageDiv.className = `message ${sender}`;
     messageDiv.innerHTML = `
-      <div class="message-avatar">${sender === "user" ? "U" : "AI"}</div>
+      <div class="message-avatar ${sender === "ai" ? "ai-avatar" : "user-avatar"}">${sender === "user" ? "U" : "AI"}</div>
       <div class="message-wrapper">
         <div class="message-content"></div>
         <div class="message-time">${new Date().toLocaleTimeString()}</div>

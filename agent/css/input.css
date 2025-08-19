@@ -2,20 +2,6 @@
    INPUT COMPONENTS
    ================= */
 
-
-  /* Highlight selected stars */
-  .star.selected {
-    color: gold;
-    transform: scale(1.2);
-  }
-
-  /* Modal display flex center */
-  .modal {
-    display: none;
-    justify-content: center;
-    align-items: center;
-  }
-
 .chat-input-container {
   border-top: none;
   background: transparent;
@@ -28,8 +14,6 @@
   border-radius: 0;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
-
 
 .chat-input-wrapper {
   width: 100%;

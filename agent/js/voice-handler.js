@@ -26,7 +26,6 @@ class VoiceHandler {
         const transcript = event.results[0][0].transcript;
         this.chatCore.messageInput.value = transcript;
         this.chatCore.autoResize();
-        this.chatCore.updateSendButton();
         this.stopRecording();
       };
 

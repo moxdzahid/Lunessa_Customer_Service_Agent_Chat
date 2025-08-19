@@ -17,15 +17,14 @@
     <script src="js/chat-core.js"></script>
     <script src="js/voice-handler.js"></script>
     <script src="js/sidebar-manager.js"></script>
-    <script src="js/rating-manager.js"></script>
+    <script src="js/auto_resize_input.js"></script>
     <script src="js/file-manager.js"></script>
     <script src="js/event-handler.js"></script>
     <script src="js/main.js"></script>
     <script src="js/sendBtn_handler.js"></script>
     <script src="js/handle_agent_satisfaction_data.js"></script>
-    <!-- <script src="js/handle_new_chat.js"></script> -->
-    <!-- <script src="js/handle_previous_chat_history.js"></script> -->
-     <script src="js/agent_chat_handler.js"></script>
+    <script src="js/agent_chat_handler.js"></script>
+    <script src="js/scroll_to_bottom.js"></script>
 </head>
 <body>
     <div class="chat-container">
@@ -34,31 +33,14 @@
         
         <!-- Sidebar -->
         <div class="sidebar">
-            <div class="sidebar-header">
-                
-            </div>
-            
+            <div class="sidebar-header"></div>
+              
             <div class="conversations-list">
                 <div class="conversation-item active">
                     <div class="conversation-preview">
                         <div class="conversation-title">Customer Service Chat</div>
                         <div class="conversation-snippet">Hi! I'm your virtual assistant...</div>
-                    </div>
-                   
-                </div>
-                <div class="conversation-item">
-                    <div class="conversation-preview">
-                        <div class="conversation-title">Order Help</div>
-                        <div class="conversation-snippet">I need help with my recent order...</div>
-                    </div>
-               
-                </div>
-                <div class="conversation-item">
-                    <div class="conversation-preview">
-                        <div class="conversation-title">Refund Request</div>
-                        <div class="conversation-snippet">I'd like to return an item...</div>
-                    </div>
-                   
+                    </div>                  
                 </div>
             </div>
             

@@ -3,41 +3,32 @@
    ================= */
 
 [data-theme="light"] body {
-  background: linear-gradient(
-    135deg,
-    #667eea 0%,
-    #764ba2 25%,
-    #f093fb 50%,
-    #f5576c 75%,
-    #4facfe 100%
-  );
-  background-size: 400% 400%;
-  animation: gradientShift 60s ease infinite;
+  background: transparent;
 }
 
 [data-theme="light"] body::before {
-  content: "";
+  content: '';
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(
-      circle at 20% 50%,
-      rgba(120, 119, 198, 0.3) 0%,
-      transparent 50%
-    ),
-    radial-gradient(
-      circle at 80% 20%,
-      rgba(255, 119, 198, 0.3) 0%,
-      transparent 50%
-    ),
-    radial-gradient(
-      circle at 40% 80%,
-      rgba(79, 172, 254, 0.2) 0%,
-      transparent 50%
-    );
-  pointer-events: none;
+  background: url('../ai-assistant-bg.png') center center / cover no-repeat fixed;
+  opacity: 0.9;
+  filter: blur(4px) brightness(0.3) contrast(1.2);
+  z-index: -2;
+}
+
+/* Dark overlay ke liye ek aur pseudo-element */
+
+[data-theme="light"] body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
   z-index: -1;
 }
 

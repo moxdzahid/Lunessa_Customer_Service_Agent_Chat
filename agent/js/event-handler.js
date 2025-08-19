@@ -11,7 +11,6 @@ class EventHandler {
     this.ratingManager = ratingManager;
     
     this.initEventListeners();
-    // this.initKeyboardShortcuts();
     this.initResponsiveHandling();
   }
 
@@ -28,19 +27,7 @@ class EventHandler {
     // Sidebar actions
     document.getElementById("talkToHuman").addEventListener("click", () => this.sidebarManager.requestHuman());
     document.getElementById("callSupport").addEventListener("click", () => this.sidebarManager.callSupport());
-
-    // // Rating modal events
-    // document.querySelectorAll(".star").forEach((star) => {
-    //   star.addEventListener("click", (e) => {
-    //     this.ratingManager.setRating(parseInt(e.target.dataset.rating));
-    //   });
-    // });
-
-    // document.getElementById("submitRating").addEventListener("click", () => this.ratingManager.submitRating());
-    // document.getElementById("skipRating").addEventListener("click", () => this.ratingManager.skipRating());
   }
-
- 
 
   initResponsiveHandling() {
     // Handle window resize for responsive sidebar
