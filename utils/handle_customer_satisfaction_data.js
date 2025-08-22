@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
  * @param {number} reviewStar - Star rating (1–5)
  * @param {string} agentId - Agent's unique ID
  * @param {string} agentName - Agent's name
- * @returns {Promise<Object>} - Latest 10 customer reviews
+ * @returns {Promise<Object>} - Latest 10 customer reviews + updated satisfaction rate
  */
 async function handleCustomerSatisfactionData(username, comment, reviewStar, agentId, agentName) {
   try {
@@ -66,13 +66,9 @@ async function handleCustomerSatisfactionData(username, comment, reviewStar, age
       }
     });
 
-    // Get the latest 10 comments (sorted by timestamp descending)
-    const latest10Comments = [...updatedStats.customerReviews]
-      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-      .slice(0, 10);
-
-    // Calculate new satisfaction rate from latest 10
-    const avgStars = latest10Comments.reduce((sum, r) => sum + r.reviewStar, 0) / latest10Comments.length;
+    // ✅ Calculate satisfaction rate using ALL satisfaction logs
+    const totalStars = updatedStats.satisfactionRateLogs.reduce((sum, r) => sum + r.reviewStar, 0);
+    const avgStars = totalStars / updatedStats.satisfactionRateLogs.length;
     const newSatisfactionRate = Math.round((avgStars / 5) * 100);
 
     // Update satisfaction rate in DB
@@ -80,6 +76,11 @@ async function handleCustomerSatisfactionData(username, comment, reviewStar, age
       where: { agentId },
       data: { satisfactionRate: newSatisfactionRate }
     });
+
+    // Get the latest 10 comments (still returning them for UI)
+    const latest10Comments = [...updatedStats.customerReviews]
+      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+      .slice(0, 10);
 
     return {
       agentId: updatedStats.agentId,
