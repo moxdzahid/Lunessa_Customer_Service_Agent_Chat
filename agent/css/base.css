@@ -174,10 +174,10 @@ body::after {
 }
 
 .chat-messages::-webkit-scrollbar-thumb {
-  background: var(--accent-primary);
+  background: #27272a;
   border-radius: 4px;
 }
 
 .chat-messages::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-secondary);
+  background: #27272a;
 }
