@@ -4,6 +4,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const messagesContainer = document.getElementById("messagesContainer");
 
   let isSending = false; // lock while awaiting and typing
+  let fileManagerInstance = null; // Will be set when available
+
+  // Get file manager instance from global chat service
+  function getFileManager() {
+    if (window.chatServiceInstance && window.chatServiceInstance.fileManager) {
+      return window.chatServiceInstance.fileManager;
+    }
+    return null;
+  }
 
   // --- Helpers ----------------------------------------------------
 
@@ -37,21 +46,63 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Append a message bubble and return its content element
-  function appendMessage(sender, initialText = "") {
+  function appendMessage(sender, initialText = "", files = []) {
     const messageDiv = document.createElement("div");
     messageDiv.className = `message ${sender}`;
+    
+    let filePreviewHtml = '';
+    if (files && files.length > 0) {
+      filePreviewHtml = '<div class="message-files">';
+      files.forEach(file => {
+        if (file.isImage && !file.error) {
+          filePreviewHtml += `<div class="message-file-item image"><img src="${file.content}" alt="${file.name}" style="max-width: 200px; max-height: 150px; border-radius: 4px;"><span class="file-name">${file.name}</span></div>`;
+        } else if (file.isDocument) {
+          const icon = getFileIcon(file.name);
+          filePreviewHtml += `<div class="message-file-item document"><span class="file-icon">${icon}</span><span class="file-name">${file.name}</span><span class="file-size">${formatFileSize(file.size)}</span></div>`;
+        }
+      });
+      filePreviewHtml += '</div>';
+    }
+
     messageDiv.innerHTML = `
       <div class="message-avatar ${sender === "ai" ? "ai-avatar" : "user-avatar"}">${sender === "user" ? "U" : "AI"}</div>
       <div class="message-wrapper">
+        ${filePreviewHtml}
         <div class="message-content"></div>
         <div class="message-time">${new Date().toLocaleTimeString()}</div>
       </div>
     `;
+    
     const contentEl = messageDiv.querySelector(".message-content");
     contentEl.textContent = initialText; // set initial (user text or empty for AI)
     messagesContainer.appendChild(messageDiv);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
     return contentEl;
+  }
+
+  // Helper functions for file display
+  function getFileIcon(fileName) {
+    const extension = fileName.split('.').pop().toLowerCase();
+    const iconMap = {
+      'txt': '📄',
+      'json': '📋',
+      'pdf': '📕',
+      'doc': '📘',
+      'docx': '📘',
+      'csv': '📊',
+      'xml': '🗂️',
+      'md': '📝',
+      'rtf': '📄'
+    };
+    return iconMap[extension] || '📎';
+  }
+
+  function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
 
   function setSendingState(state) {
@@ -103,12 +154,28 @@ document.addEventListener("DOMContentLoaded", () => {
     if (isSending) return;
 
     const userInput = messageInput.value.trim();
-    if (!userInput) return;
+    const fileManager = getFileManager();
+    const hasFiles = fileManager && fileManager.getSelectedFiles().length > 0;
+    
+    // Require either text input or files
+    if (!userInput && !hasFiles) return;
 
     setSendingState(true);
 
-    // 1) Show user's message immediately
-    appendMessage("user", userInput);
+    let filesWithContent = [];
+    if (hasFiles) {
+      try {
+        filesWithContent = await fileManager.getFilesWithContent();
+        console.log('Files prepared for sending:', filesWithContent);
+      } catch (error) {
+        console.error('Error processing files:', error);
+        setSendingState(false);
+        return;
+      }
+    }
+
+    // 1) Show user's message immediately with files
+    appendMessage("user", userInput, filesWithContent);
 
     // 2) Build chat history including this user line
     const chatHistory = buildChatHistory();
@@ -120,13 +187,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      // 3) Send to server
+      // 3) Prepare request payload with files
+      const requestPayload = {
+        chatHistory,
+        userInput,
+        files: filesWithContent.length > 0 ? filesWithContent : undefined
+      };
+
+      // 4) Send to server
       const response = await fetch(
         `/chat_agent?agentId=${encodeURIComponent(agentId)}&agentName=${encodeURIComponent(agentName)}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chatHistory, userInput }),
+          body: JSON.stringify(requestPayload),
         }
       );
 
@@ -139,18 +213,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const data = await response.json();
 
-      // 4) Prepare AI bubble and animate typing
+      // 5) Prepare AI bubble and animate typing
       if (data && typeof data.reply === "string") {
         const cleanReply = stripLeadingPrefixes(data.reply);
         const aiContentEl = appendMessage("ai", ""); // empty bubble to type into
         await typeWriterEffect(aiContentEl, cleanReply, { speedMs: 18, chunkSize: 2 });
       }
 
-      messageInput.value = ""; // clear input after success
+      // 6) Clear input and files after success
+      messageInput.value = "";
+      if (fileManager) {
+        fileManager.clearFiles();
+      }
+      
     } catch (err) {
       console.error("❌ Network/parse error:", err);
     } finally {
-      // 5) Re-enable input after typing completes (or on error)
+      // 7) Re-enable input after typing completes (or on error)
       setSendingState(false);
     }
   }

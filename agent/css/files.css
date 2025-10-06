@@ -17,27 +17,77 @@
   margin-top: 12px;
   flex-wrap: wrap;
   padding: 0 4px;
+  max-height: 200px;
+  overflow-y: auto;
 }
 
 .file-item {
   position: relative;
   display: inline-block;
   animation: fileSlideIn 0.3s ease-out;
-}
-
-.file-item img {
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
   border-radius: 12px;
   border: 2px solid var(--border-primary);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 }
 
+/* Image file items */
+.file-item img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
 .file-item:hover img {
   transform: scale(1.05);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Document file items */
+.file-item.document-file {
+  background: var(--bg-secondary);
+  padding: 8px 12px;
+  min-width: 150px;
+  max-width: 250px;
+  border-radius: 8px;
+}
+
+.file-item.document-file:hover {
+  background: var(--bg-tertiary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.file-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.file-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.file-name {
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 2px;
+}
+
+.file-size {
+  font-size: 11px;
+  color: var(--text-tertiary);
 }
 
 .remove-file {
@@ -64,4 +114,102 @@
   transform: scale(1.1);
   background: linear-gradient(135deg, #dc2626, #b91c1c);
   box-shadow: 0 3px 10px rgba(220, 38, 38, 0.4);
+}
+
+/* Drag and drop zone styles */
+.input-wrapper.drag-over {
+  background: var(--bg-tertiary);
+  border: 2px dashed var(--accent-primary);
+}
+
+.input-wrapper.drag-over .message-input {
+  border-color: var(--accent-primary);
+}
+
+/* Message file attachments */
+.message-files {
+  margin-bottom: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.message-file-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-tertiary);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  max-width: 200px;
+}
+
+.message-file-item.image {
+  flex-direction: column;
+  padding: 4px;
+  background: transparent;
+}
+
+.message-file-item.image img {
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.message-file-item.image .file-name {
+  font-size: 10px;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-top: 4px;
+}
+
+.message-file-item.document .file-icon {
+  font-size: 16px;
+}
+
+.message-file-item.document .file-name {
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+
+.message-file-item.document .file-size {
+  color: var(--text-tertiary);
+  font-size: 10px;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+/* Animation for file items */
+@keyframes fileSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .file-preview {
+    max-height: 120px;
+  }
+  
+  .file-item.document-file {
+    min-width: 120px;
+    max-width: 180px;
+    padding: 6px 8px;
+  }
+  
+  .message-file-item {
+    max-width: 150px;
+    font-size: 11px;
+  }
 }

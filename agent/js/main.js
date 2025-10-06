@@ -8,7 +8,6 @@ class AICustomerService {
     this.chatCore = new ChatCore();
     this.themeManager = new ThemeManager();
     this.voiceHandler = new VoiceHandler(this.chatCore);
-    // this.ratingManager = new RatingManager(this.chatCore, this.themeManager);
     this.fileManager = new FileManager();
     
     // Initialize event handler last (needs all other modules)
@@ -21,6 +20,9 @@ class AICustomerService {
 
     // Auto-resize message input
     this.chatCore.autoResize();
+    
+    // Make fileManager globally accessible for sendBtn_handler
+    window.fileManager = this.fileManager;
   }
 
   // Public API methods for external access
@@ -40,7 +42,6 @@ class AICustomerService {
     return this.themeManager.toggleTheme();
   }
 
-
   // Getter methods for accessing module states
   get messages() {
     return this.chatCore.messages;
@@ -57,7 +58,6 @@ class AICustomerService {
   get currentTheme() {
     return this.themeManager.getCurrentTheme();
   }
-
 
   get selectedFiles() {
     return this.fileManager.getSelectedFiles();

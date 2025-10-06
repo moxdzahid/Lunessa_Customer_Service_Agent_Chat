@@ -162,27 +162,6 @@
   flex-shrink: 0;
 }
 
-.new-conversation-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  color: var(--text-primary);
-  cursor: pointer;
-  font-size: 13px;
-  transition: all 0.2s ease;
-  margin: 0 16px 16px;
-  gap: 8px;
-}
-
-.new-conversation-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.15);
-}
-
 .sidebar-overlay {
   position: fixed;
   top: 0;
@@ -271,4 +250,34 @@
 .sidebar-toggle.active:hover .sidebar-toggle-icon {
   transform: rotate(90deg) scale(1.2);
   color: var(--accent-secondary);
+}
+
+.conversations-list {
+  flex: 1;
+  overflow-y: auto;
+}
+.conversations-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* .conversations-list::-webkit-scrollbar-track {
+  background: #18181b;
+  border-radius: 4px;
+  margin: 2px;
+} */
+
+.conversations-list::-webkit-scrollbar-thumb {
+  background: #18181b;
+  border-radius: 4px;
+  border: 1px solid var(--bg-secondary);
+  min-height: 20px;
+}
+
+/* .conversations-list::-webkit-scrollbar-thumb:hover {
+  background: #18181b;
+  box-shadow: 0 0 6px rgba(139, 92, 246, 0.3);
+} */
+
+.conversations-list::-webkit-scrollbar-corner {
+  background: transparent;
 }

@@ -117,7 +117,7 @@
 }
 
 .message-input::-webkit-scrollbar-thumb {
-  background: var(--accent-primary);
+  background: #27272a;
   border-radius: 4px;
   border: 1px solid var(--bg-secondary);
   min-height: 20px;
