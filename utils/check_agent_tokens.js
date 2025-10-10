@@ -14,7 +14,7 @@ const prisma = new PrismaClient();
  */
 async function checkAgentTokens(agentId) {
   try {
-    const agent = await prisma.customerServiceAgents.findUnique({
+    const agent = await prisma.CustomerServiceAgents.findUnique({
       where: { agentId },
       select: {
         agentId: true,
