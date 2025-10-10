@@ -28,7 +28,7 @@ async function updateAgentUsage(agentId, agentName, modelName, tokensUsed) {
 
   try {
     // ✅ Update existing record
-    const updatedAgent = await prisma.agentUsageStatistics.update({
+    const updatedAgent = await prisma.AgentUsageStatistics.update({
       where: { agentId },
       data: {
         usageLogs: {
@@ -50,7 +50,7 @@ async function updateAgentUsage(agentId, agentName, modelName, tokensUsed) {
     // If record doesn't exist — create one
     if (err.code === "P2025") {
       try {
-        const newAgent = await prisma.agentUsageStatistics.create({
+        const newAgent = await prisma.AgentUsageStatistics.create({
           data: {
             agentId,
             agentName,
