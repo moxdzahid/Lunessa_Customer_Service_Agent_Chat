@@ -3,21 +3,20 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.CHAT_AGENT_PORT || 3001;
 const modelName = process.env.AI_MODEL || "gemini-2.5-flash";
-const apiKey = process.env.GEMINI_API_KEY;
+const API_KEY = process.env.GEMINI_API_KEY;
 const handleCustomerSatisfactionData = require('./utils/handle_customer_satisfaction_data');
 const chat_title_generator = require('./utils/chat_title_generator');
+const validateClientChatHistory = require('./utils/validate_client_chat_history');
+const getAllAgentDetails = require('./utils/get_all_agent_details');
+const chatAgentHandler = require('./routesHandler/chat_agent');
 
-console.log(apiKey,modelName);
+console.log(API_KEY,modelName);
 app.use(express.static(__dirname+"/agent"));
 
 
 // Middleware to parse JSON bodies
 app.use(express.json());
 
-// Utils
-const validateClientChatHistory = require('./utils/validate_client_chat_history');
-const getAllAgentDetails = require('./utils/get_all_agent_details');
-const chatAgentHandler = require('./routesHandler/chat_agent');
 
 // Basic route
 app.get('/chat_agent', (req, res) => {
@@ -63,55 +62,72 @@ app.post('/chat_agent', async (req, res) => {
     const { agentId, agentName } = req.query;
     const { chatHistory, userInput } = req.body;
 
-    // Check query params
+    // 1️⃣ Validate query params
     if (!agentId || !agentName) {
       return res.status(400).json({
+        success: false,
         error: "Missing query parameters: agentId and agentName are required",
       });
     }
 
-    // Check body params
+    // 2️⃣ Validate body params
     if (!chatHistory || !userInput) {
       return res.status(400).json({
+        success: false,
         error: "Missing body parameters: chatHistory and userInput are required",
       });
     }
 
-    // ✅ Validate chat history
+    // 3️⃣ Validate chat history format
     const validation = validateClientChatHistory(chatHistory);
     if (validation.status === "fail") {
       return res.status(400).json({
+        success: false,
         error: "Invalid chat history",
         reason: validation.reason,
       });
     }
 
-    // ✅ Fetch agent details
+    // 4️⃣ Fetch agent details
     const agentDetails = await getAllAgentDetails(agentId, agentName);
     if (!agentDetails) {
       return res.status(404).json({
+        success: false,
         error: `No agent found for id=${agentId}, name=${agentName}`,
       });
     }
 
-    // ✅ Call chat agent handler
+    // 5️⃣ Call chat agent handler
     const response = await chatAgentHandler(
       agentId,
       agentName,
       chatHistory,
       userInput,
       agentDetails,
-      apiKey,
-      modelName
-
-
+      API_KEY 
     );
 
-    return res.json(response);
+    // 6️⃣ Return response with proper status codes
+    if (!response.success) {
+      // If tokens are missing or AI call failed → 400
+      return res.status(400).json({
+        success: false,
+        error: response.error || "Unable to process your request",
+      });
+    }
+
+    // ✅ Success
+    return res.status(200).json({
+      success: true,
+      data: response.data,
+    });
 
   } catch (err) {
-    console.error("❌ Error handling /chat_agent:", err);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("❌ Unexpected error handling /chat_agent:", err);
+    return res.status(500).json({
+      success: false,
+      error: "Internal server error",
+    });
   }
 });
 
@@ -131,7 +147,7 @@ app.post("/chat_title_generator", async (req, res) => {
 
     const { title, totalTokens } = await chat_title_generator(
       chatHistoryString,
-      apiKey,
+      API_KEY,
       modelName
     );
 
