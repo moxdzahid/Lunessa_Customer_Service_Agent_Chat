@@ -5,7 +5,7 @@ const PORT = process.env.CHAT_AGENT_PORT || 3001;
 const modelName = process.env.AI_MODEL || "gemini-2.5-flash";
 const API_KEY = process.env.GEMINI_API_KEY;
 const handleCustomerSatisfactionData = require('./utils/handle_customer_satisfaction_data');
-const chat_title_generator = require('./utils/chat_title_generator');
+const generateChatTitle = require('./utils/chat_title_generator');
 const validateClientChatHistory = require('./utils/validate_client_chat_history');
 const getAllAgentDetails = require('./utils/get_all_agent_details');
 const chatAgentHandler = require('./routesHandler/chat_agent');
@@ -145,7 +145,7 @@ app.post("/chat_title_generator", async (req, res) => {
       .map(msg => `${msg.role === "user" ? "User" : "AI"}: ${msg.content}`)
       .join("\n");
 
-    const { title, totalTokens } = await chat_title_generator(
+    const { title, totalTokens } = await generateChatTitle(
       chatHistoryString,
       API_KEY,
       modelName

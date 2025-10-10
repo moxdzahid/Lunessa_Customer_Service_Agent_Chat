@@ -211,7 +211,8 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      const data = await response.json();
+      const serverData = await response.json();
+      const data= serverData.data;
 
       // 5) Prepare AI bubble and animate typing
       if (data && typeof data.reply === "string") {
