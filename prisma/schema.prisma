@@ -6,37 +6,84 @@ datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
 }
-
-// 1️⃣ Customer Service Agents
+// 1️⃣ Customer Service Agents model
 model CustomerServiceAgents {
-  id                        String   @id @default(auto()) @map("_id") @db.ObjectId
+  id                        String               @id @default(auto()) @map("_id") @db.ObjectId
   companyName               String
   establishmentDate         DateTime
   companyOwnerName          String
   companyHumanServiceNumber String
-  companyEmail              String   @unique
+  companyEmail              String               
   companyDescription        String
-  agentId                   String   @unique
+  agentId                   String               @unique
   agentName                 String
-  username                  String   @unique // New unique username field
-  availableTokens           Int      @default(0)
+  username                  String               @unique // New unique username field
+  createdAt                 DateTime             @default(now())
+  
+  // New field to store per-model token counts and status
+  tokenBalances             TokenBalance[]       
+
+  // Currently active model in use for this agent
+  usingModel                UsingModel?
+
+  // Default model when no explicit usingModel is set
+  defaultModel              DefaultModel?
+
   items                     Item[]
+
+  // New fields
+  lastModified              DateTime             @default(now())
+  modificationHistory       AgentModification[]
+} 
+
+// 2️⃣ Token balances for all models the agent owns
+type TokenBalance {
+  modelName        String
+  availableTokens  Int
+  status           String  @default("inactive")  // e.g. "active" | "inactive"
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @default(now())
 }
 
+// 3️⃣ The currently active model with tokens in use
+type UsingModel {
+  modelName        String
+  availableTokens  Int
+  status           String @default("inactive")   // e.g. "active" | "inactive"
+}
+
+// 4️⃣ The default fallback model and its token availability
+type DefaultModel {
+  modelName        String
+  availableTokens  Int
+}
 
 // Embedded Item schema
 type Item {
-  itemName                        String
-  itemCode                        String
-  itemInitialWorkingExplanation   String
-  itemRunningSteps                String[]
-  commonProblemsSolutions         ProblemSolution[]
+  itemName                      String
+  itemCode                      String
+  itemInitialWorkingExplanation String
+  itemRunningSteps              String[]
+  commonProblemsSolutions       ProblemSolution[]
 }
 
 type ProblemSolution {
   problem  String
   solution String
 }
+
+// Embedded type for agent modification history
+type AgentModification {
+  timestamp                 DateTime @default(now())
+  items                     Item[]
+  companyName               String
+  establishmentDate         DateTime
+  companyOwnerName          String
+  companyHumanServiceNumber String
+  companyEmail              String
+  companyDescription        String
+}
+
 
 // 2️⃣ Agent Usage Statistics
 model AgentUsageStatistics {
@@ -76,4 +123,21 @@ model AgentRequestsHandledLogs {
 
 type RequestHandledLog {
   timestamp DateTime @default(now())
+}
+
+
+/// AI models, pricing data
+model AIModel {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  
+  modelName     String   @unique                           // e.g. "gpt-4", "gpt-3.5", "claude-3-opus"
+  provider      String                                   // e.g. "OpenAI", "Anthropic", "Google"
+  
+  pricePerToken Float                                    // price per token (in USD or INR)
+  currency      String   @default("USD")                 // currency for price, default USD
+
+  availableTill DateTime                                 // until when this model will be available (like end of support)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
