@@ -1,3 +1,5 @@
+// utils/chat_title_generator.js
+
 const sendMessageToAIAgent = require("./send_message_to_AI_agent");
 const { v4: uuidv4 } = require("uuid");
 
@@ -13,10 +15,14 @@ const { v4: uuidv4 } = require("uuid");
 async function generateChatTitle(chatHistory, apiKey, modelName) {
   // Input validation
   if (typeof chatHistory !== "string" || !chatHistory.trim()) {
+    console.log("Chat history must be a non-empty string");
+    
     return { success: false, error: "Chat history must be a non-empty string" };
   }
   if (!apiKey || !modelName) {
-    return { success: false, error: "API key and modelName are required" };
+    console.log("API key and modelName are required");
+    
+    return { success: false, error: "Server is facing some issues. Try again later" };
   }
 
   try {
@@ -33,23 +39,36 @@ Only output the title. Do not include explanations.
 
     if (!aiResponse.success) {
       // If AI fails, fallback to UUID as title
+      console.error("AI call failed. Falling back to UUID title:", aiResponse.error);
       return {
-        success: true,
-        data: { title: `Chat-${uuidv4()}` },
+        success: true, // Mark as success because a title was generated (the fallback)
+        data: { title: `${uuidv4()}` },
       };
     }
-
-    // Return AI-generated title only
+     
+    // Return AI-generated title only, trimmed for cleanliness
+    const finalTitle = aiResponse.data.reply.trim();
+    
+    // Fallback to UUID if the AI returns empty text after trimming
+    if (!finalTitle) {
+         console.warn("AI returned an empty title. Falling back to UUID.");
+         return {
+            success: true, 
+            data: { title: `${uuidv4()}` },
+         };
+    }
+     
     return {
       success: true,
-      data: { title: aiResponse.data.reply.trim() },
+      data: { title: finalTitle },
     };
 
   } catch (err) {
+    console.error("Unexpected error in generateChatTitle. Falling back to UUID.", err);
     // Unexpected errors → fallback to UUID
     return {
       success: true,
-      data: { title: `Chat-${uuidv4()}` },
+      data: { title: `${uuidv4()}` },
     };
   }
 }

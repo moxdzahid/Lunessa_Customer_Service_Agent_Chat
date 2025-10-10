@@ -5,10 +5,12 @@ const PORT = process.env.CHAT_AGENT_PORT || 3001;
 const modelName = process.env.AI_MODEL || "gemini-2.5-flash";
 const API_KEY = process.env.GEMINI_API_KEY;
 const handleCustomerSatisfactionData = require('./utils/handle_customer_satisfaction_data');
-const generateChatTitle = require('./utils/chat_title_generator');
 const validateClientChatHistory = require('./utils/validate_client_chat_history');
 const getAllAgentDetails = require('./utils/get_all_agent_details');
 const chatAgentHandler = require('./routesHandler/chat_agent');
+const chatTitleGenerator = require("./routesHandler/chat_title_generator");
+
+
 
 console.log(API_KEY,modelName);
 app.use(express.static(__dirname+"/agent"));
@@ -132,31 +134,8 @@ app.post('/chat_agent', async (req, res) => {
 });
 
 // Generate title for the chat history for saving the previous chat with the generated title
-app.post("/chat_title_generator", async (req, res) => {
-  try {
-    const { messages } = req.body; // expecting { messages: [ {role, content}, ... ] }
+app.post("/chat_title_generator", chatTitleGenerator);
 
-    if (!Array.isArray(messages) || messages.length === 0) {
-      return res.status(400).json({ error: "Chat history must be a non-empty array" });
-    }
-
-    // Convert array to readable string for AI
-    const chatHistoryString = messages
-      .map(msg => `${msg.role === "user" ? "User" : "AI"}: ${msg.content}`)
-      .join("\n");
-
-    const { title, totalTokens } = await generateChatTitle(
-      chatHistoryString,
-      API_KEY,
-      modelName
-    );
-
-    return res.json({ chatTitle: title, totalTokens });
-  } catch (err) {
-    console.error("❌ Error in /chat_title_generator:", err);
-    return res.status(500).json({ error: "Failed to generate chat title" });
-  }
-});
 
 
 app.listen(PORT, () => {

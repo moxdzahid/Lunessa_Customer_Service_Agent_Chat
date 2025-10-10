@@ -95,7 +95,7 @@ model AgentUsageStatistics {
   satisfactionRateLogs   SatisfactionRateLog[] // History of review stars
   customerReviews        CustomerReview[]
 }
-
+ 
 type UsageLog {
   modelName  String
   tokensUsed Int

@@ -34,66 +34,81 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("previousChats", JSON.stringify(chats));
   }
 
+
   // --- Save Current Chat Function ---
-  function saveCurrentChat() {
-    const chatHistory = getChatHistory();
-    if (!chatHistory.length) return;
+async function saveCurrentChat() {
+  const chatHistory = getChatHistory();
+  if (!chatHistory.length) return;
 
-    let previousChats = getPreviousChats();
+  let previousChats = getPreviousChats();
 
-    if (window.isNewChat) {
-      // ✅ Create brand new chat
-      const newChatId = generateChatId();
-      
-      // Generate title (you can call your title generator API here)
-      fetch("http://localhost:3001/chat_title_generator", {
+  if (window.isNewChat) {
+    // 💡 Generate the unique ID on the client, as the server doesn't provide it
+    const chatId = generateChatId(); 
+    let chatTitle = `Chat-${Date.now()}`; // Default fallback title
+
+    try {
+      // Call the chat title generator API
+      const response = await fetch("http://localhost:3001/chat_title_generator", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: chatHistory }),
-      })
-      .then(response => response.json())
-      .then(result => {
-        const newChat = {
-          chatId: newChatId,
-          title: result.chatTitle || `Chat ${newChatId}`,
-          history: chatHistory,
-        };
-
-        previousChats.push(newChat);
-        savePreviousChats(previousChats);
-        
-        window.activeChatId = newChatId;
-        window.isNewChat = false; // ✅ Now it's not new anymore
-        
-        console.log("✅ Saved new chat:", newChat);
-        renderConversationList();
-      })
-      .catch(error => {
-        console.error("❌ Error generating title:", error);
-        // Fallback: save with default title
-        const newChat = {
-          chatId: newChatId,
-          title: `Chat ${Date.now()}`,
-          history: chatHistory,
-        };
-        previousChats.push(newChat);
-        savePreviousChats(previousChats);
-        window.activeChatId = newChatId;
-        window.isNewChat = false;
-        renderConversationList();
       });
 
-    } else {
-      // ✅ Update existing chat
-      const chatIndex = previousChats.findIndex(c => c.chatId === window.activeChatId);
-      if (chatIndex !== -1) {
-        previousChats[chatIndex].history = chatHistory;
-        savePreviousChats(previousChats);
-        console.log(`🔄 Updated existing chat: ${window.activeChatId}`);
-        renderConversationList();
+      const result = await response.json();
+
+      // Check success and extract title directly from the response root
+      if (result?.success && result?.chatTitle) { // <--- FIX 1: Removed '.data'
+        chatTitle = result.chatTitle;
+        console.log(`✅ Received title from server: ${chatTitle}`);
+      } else {
+        console.warn("⚠️ Chat title generation failed, using fallback title.", result?.error);
       }
+      
+      const newChat = {
+        chatId, // <--- FIX 2: Use client-generated ID
+        title: chatTitle, // Use generated or fallback title
+        history: chatHistory,
+      };
+
+      previousChats.push(newChat);
+      savePreviousChats(previousChats);
+      window.activeChatId = chatId;
+      window.isNewChat = false;
+
+      console.log("✅ Saved new chat:", newChat);
+      renderConversationList();
+
+    } catch (error) {
+      console.error("❌ Error saving new chat:", error);
+
+      // Fallback: save with the already generated chat ID and fallback title
+      const newChat = {
+        chatId, // Use the ID generated at the start
+        title: chatTitle, // Use the default fallback title
+        history: chatHistory,
+      };
+      previousChats.push(newChat);
+      savePreviousChats(previousChats);
+      window.activeChatId = chatId;
+      window.isNewChat = false;
+
+      console.log("⚠️ Saved new chat with fallback ID/title due to network error:", newChat);
+      renderConversationList();
+    }
+
+  } else {
+    // ✅ Update existing chat
+    const chatIndex = previousChats.findIndex(c => c.chatId === window.activeChatId);
+    if (chatIndex !== -1) {
+      previousChats[chatIndex].history = chatHistory;
+      savePreviousChats(previousChats);
+      console.log(`🔄 Updated existing chat: ${window.activeChatId}`);
+      renderConversationList();
     }
   }
+}
+
 
   // --- Sidebar UI ---
   function renderConversationList() {
