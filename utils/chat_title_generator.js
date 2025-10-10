@@ -1,16 +1,22 @@
 const sendMessageToAIAgent = require("./send_message_to_AI_agent");
+const { v4: uuidv4 } = require("uuid");
 
 /**
  * Generates a suitable title for a given chat history using Gemini AI.
+ * If AI fails, returns a UUID as fallback title.
  *
  * @param {string} chatHistory - The full chat history as a string.
  * @param {string} apiKey - Gemini API key.
  * @param {string} modelName - Model name (e.g., "gemini-2.5-flash").
- * @returns {Promise<{ title: string, totalTokens: number }>} The generated chat title and tokens used.
+ * @returns {Promise<{ success: boolean, data?: { title: string }, error?: string }>}
  */
 async function generateChatTitle(chatHistory, apiKey, modelName) {
+  // Input validation
   if (typeof chatHistory !== "string" || !chatHistory.trim()) {
-    throw new Error("Chat history must be a non-empty string");
+    return { success: false, error: "Chat history must be a non-empty string" };
+  }
+  if (!apiKey || !modelName) {
+    return { success: false, error: "API key and modelName are required" };
   }
 
   try {
@@ -23,19 +29,28 @@ ${chatHistory}
 Only output the title. Do not include explanations.
 `;
 
-    const { reply, totalTokens } = await sendMessageToAIAgent(
-      inputMessage,
-      apiKey,
-      modelName
-    );
+    const aiResponse = await sendMessageToAIAgent(inputMessage, apiKey, modelName);
 
+    if (!aiResponse.success) {
+      // If AI fails, fallback to UUID as title
+      return {
+        success: true,
+        data: { title: `Chat-${uuidv4()}` },
+      };
+    }
+
+    // Return AI-generated title only
     return {
-      title: reply.trim(),
-      totalTokens,
+      success: true,
+      data: { title: aiResponse.data.reply.trim() },
     };
+
   } catch (err) {
-    console.error("❌ Error generating chat title:", err);
-    throw err;
+    // Unexpected errors → fallback to UUID
+    return {
+      success: true,
+      data: { title: `Chat-${uuidv4()}` },
+    };
   }
 }
 
