@@ -92,7 +92,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (window.isNewChat) {
       // 💡 Generate the unique ID on the client
-      const chatId = generateChatId(); 
+      const chatId = generateChatId();
+      window.activeChatId = chatId; // Set immediately to prevent race conditions
+      window.isNewChat = false; // Mark as existing chat immediately
+      
       let chatTitle = `Chat-${Date.now()}`; // Default fallback title
 
       try {
@@ -122,8 +125,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         agentChats.push(newChat);
         saveCurrentAgentChats(agentChats);
-        window.activeChatId = chatId;
-        window.isNewChat = false;
 
         console.log(`✅ Saved new chat for agent ${window.currentAgentId}:`, newChat);
         renderConversationList();
@@ -140,8 +141,6 @@ document.addEventListener("DOMContentLoaded", () => {
         };
         agentChats.push(newChat);
         saveCurrentAgentChats(agentChats);
-        window.activeChatId = chatId;
-        window.isNewChat = false;
 
         console.log("⚠️ Saved new chat with fallback ID/title due to network error:", newChat);
         renderConversationList();
@@ -259,12 +258,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- Handle New Chat ---
   newChatBtn.addEventListener("click", () => {
-    // ✅ Save current chat before starting new one
-    saveCurrentChat();
+    // ✅ IMPORTANT: Reset flags BEFORE saving to prevent update during save
+    const previousChatId = window.activeChatId;
+    const previousIsNewChat = window.isNewChat;
     
-    // ✅ Reset for new chat
+    // Set new chat flags immediately
     window.isNewChat = true;
     window.activeChatId = null;
+    
+    // ✅ Save previous chat if there was one
+    if (previousChatId && !previousIsNewChat) {
+      // Temporarily restore previous state to save correctly
+      window.activeChatId = previousChatId;
+      window.isNewChat = false;
+      saveCurrentChat();
+      // Reset again after save
+      window.activeChatId = null;
+      window.isNewChat = true;
+    } else if (previousIsNewChat && messagesContainer.children.length > 0) {
+      // If it was a new chat with messages, save it
+      window.isNewChat = false;
+      window.activeChatId = previousChatId || generateChatId();
+      saveCurrentChat();
+      // Reset for the actual new chat
+      window.activeChatId = null;
+      window.isNewChat = true;
+    }
     
     // ✅ Clear UI
     messagesContainer.innerHTML = "";
